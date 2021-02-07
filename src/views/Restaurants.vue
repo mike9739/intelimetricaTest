@@ -3,17 +3,6 @@
   <v-row class="justify-center ">
     <v-img src="../assets/MELP.svg" class="subheading"  max-width="500" max-height="300"></v-img>
   </v-row>
-  <v-row cols="12">
-    <v-col >
-      <div class=" text-center" >
-        <v-toolbar width="300" floating>
-          <v-text-field  class="mt-1" v-model="search" placeholder="Search in our list of restaurants" ></v-text-field>
-          <v-btn outlined text class="ml-2" color="pink darken-2" @click="handlerFilterSetData"><v-icon>mdi-magnify</v-icon></v-btn>
-        </v-toolbar>
-      </div>
-    </v-col>
-  </v-row>
-
 
 
   <v-container fluid>
@@ -38,11 +27,8 @@
                   <v-divider class="mx-4"></v-divider>
 
                   <v-card-actions>
-                    <v-btn color="blue lighten-2" text >
+                    <v-btn color="blue lighten-2" text @click="handlerShowInfo(item)">
                        <v-icon> mdi-information</v-icon>
-                    </v-btn>
-                    <v-btn color="blue lighten-2 " text >
-                      <v-icon> mdi-map-search</v-icon>
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -56,6 +42,23 @@
         :length="restaurantPages.length"
     ></v-pagination>
   </div>
+  <v-dialog class="mb-2 ml-30" v-model="dialogInfo" persistent max-width="500px">
+    <v-card>
+        <v-card-title>{{contactForm.name}}</v-card-title>
+        <v-card-text>{{contactForm.phone}}</v-card-text>
+        <v-card-text>{{contactForm.email}}</v-card-text>
+        <v-card-text><a :href="contactForm.site">Web Site</a></v-card-text>
+        <v-divider class="mx-4"></v-divider>
+
+        <v-card-actions>
+          <v-btn color="blue lighten-2" text @click="closeDialogInfo">
+            Close
+          </v-btn>
+
+        </v-card-actions>
+    </v-card>
+  </v-dialog>
+
 </div>
 </template>
 
@@ -67,7 +70,13 @@ name: "Restaurants",
   components: {},
   data: () => ({
     data,
-    info:[],
+    dialogInfo:false,
+    contactForm:{
+      name:'',
+      email:'',
+      phone:'',
+      site:'',
+    },
     page:1,
     search:null,
     restaurant: [] ,
@@ -108,7 +117,12 @@ name: "Restaurants",
   },
   methods:{
       handlerShowInfo(item){
-        console.log(item)
+        this.contactForm.name  = item.name;
+        this.contactForm.email= item.contact.email;
+        this.contactForm.phone=item.contact.phone;
+        this.contactForm.site=item.contact.site;
+        this.dialogInfo = true;
+
       },
       handlerSetPagination(){
         this.restaurant =this.restaurantPages[parseInt(this.page)-1];
@@ -128,6 +142,13 @@ name: "Restaurants",
         }
         this.$store.commit('SET_RESTAURANT_PAGES',array);
         this.restaurant= this.restaurantPages[0];
+      },
+      closeDialogInfo(){
+        this.contactForm.name  = '';
+        this.contactForm.email= '';
+        this.contactForm.phone='';
+        this.contactForm.site='';
+        this.dialogInfo = false;
       }
 
   },
